@@ -17,7 +17,7 @@ O sistema trabalha com **produtos feitos sob encomenda**, com opções de **entr
 
 Assista à demonstração do sistema para conhecer suas principais funcionalidades e a experiência de navegação.
 
-**Link do vídeo:** [Inserir link do vídeo de demonstração aqui](https://drive.google.com/file/d/10v4cRl39uppVhH2UhB8YjDSQqnCsY_o1/view?usp=sharing)
+**Link do vídeo:** https://drive.google.com/file/d/10v4cRl39uppVhH2UhB8YjDSQqnCsY_o1/view?usp=sharing
 
 ## 🌐 Link do site publicado
 
