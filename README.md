@@ -19,9 +19,9 @@ Assista à demonstração do sistema para conhecer suas principais funcionalidad
 
 **Link do vídeo:** https://drive.google.com/file/d/10v4cRl39uppVhH2UhB8YjDSQqnCsY_o1/view?usp=sharing
 
-## 🌐 Link do site publicado
+## 🌐 Site publicado
 
-https://ki-brownie.onrender.com
+**Link do site:** https://ki-brownie.onrender.com
 
 ## ✨ Funcionalidades
 
