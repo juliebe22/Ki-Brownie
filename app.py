@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 import unicodedata
+import logging
 from functools import wraps
 from urllib.parse import quote
 
@@ -462,6 +463,7 @@ def catalogo():
             produto["max_coberturas"] = opcoes.get("max_coberturas", 1)
 
     except Exception:
+        app.logger.exception("ERRO AO CARREGAR O CATÁLOGO")
         produtos = []
         flash("Não foi possível carregar o catálogo.", "erro")
 
