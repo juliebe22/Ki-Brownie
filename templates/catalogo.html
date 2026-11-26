@@ -54,8 +54,8 @@
                     {% for produto in produtos_categoria %}
                         {% set nome = produto.nome|lower %}
                         {% set categoria_produto = produto.categoria|lower|replace("-", " ")|trim %}
-                        {% set eh_bolo_vulcao = "bolo vulcão" in nome %}
-                        {% set eh_docinho = categoria_produto == "docinhos" and "docinhos" in nome %}
+                        {% set eh_bolo_vulcao = "bolo vulcão" in nome and "personalizados" not in nome %}
+                        {% set eh_docinho = categoria_produto in ["docinho", "docinhos"] and "docinhos" in nome and "personaliz" not in nome %}
                         {% set eh_brownie = categoria_produto in ["brownie", "brownies"] and "brownie recheado" in nome %}
 
                         {% if categoria_produto in ["docinho", "docinhos"] %}
@@ -86,7 +86,11 @@
                                             R$ {{ produto.preco_formatado|replace(".", ",") }}
                                         </p>
                                         <span class="texto-escolher">
-                                            Clique para escolher as opções
+                                            {% if "personalizados" in nome %}
+                                                Clique para adicionar ao carrinho
+                                            {% else %}    
+                                                Clique para escolher as opções
+                                            {% endif %}    
                                         </span>
                                     </div>
 
