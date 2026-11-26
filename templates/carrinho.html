@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Meu carrinho | Ki-Brownie{% endblock %}
+
+{% block content %}
+<main class="principal pagina-carrinho">
+    <div class="cabecalho-carrinho">
+        <div>
+            <h2>Meu carrinho</h2>
+            <p>Confira seus produtos e ajuste as quantidades do pedido.</p>
+        </div>
+
+        <a class="link-voltar-catalogo" href="{{ url_for('catalogo') }}">
+            ← Continuar comprando
+        </a>
+    </div>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            <div class="mensagens-carrinho">
+                {% for categoria, mensagem in mensagens %}
+                    <p class="mensagem {{ categoria }}">{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if itens %}
+        <section class="lista-carrinho">
+            {% for item in itens %}
+                <article class="item-carrinho">
+                    <div class="dados-item-carrinho">
+                        <h3>{{ item.nome }}</h3>
+
+                        {% if item.detalhes_opcoes %}
+                            <p class="detalhes-item-carrinho">
+                                {{ item.detalhes_opcoes }}
+                            </p>
+                        {% endif %}
+
+                        {% if item.sabor %}
+                            <p class="detalhes-item-carrinho">
+                                Sabor: {{ item.sabor }}
+                            </p>
+                        {% endif %}
+
+                        <p class="preco-unitario">
+                            R$ {{ "%.2f"|format(item.preco)|replace(".", ",") }} por unidade
+                        </p>
+
+                        <p class="subtotal-item">
+                            Subtotal:
+                            <strong>R$ {{ "%.2f"|format(item.subtotal)|replace(".", ",") }}</strong>
+                        </p>
+                    </div>
+
+                    <div class="acoes-item-carrinho">
+                        <form
+                            class="controle-quantidade-carrinho"
+                            method="POST"
+                            action="{{ url_for('alterar_quantidade_carrinho', id_item=item.id_item) }}"
+                        >
+                            <button
+                                type="submit"
+                                name="acao"
+                                value="menos"
+                                aria-label="Diminuir quantidade de {{ item.nome }}"
+                            >−</button>
+
+                            <span>{{ item.quantidade }}</span>
+
+                            <button
+                                type="submit"
+                                name="acao"
+                                value="mais"
+                                aria-label="Aumentar quantidade de {{ item.nome }}"
+                            >+</button>
+                        </form>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('remover_do_carrinho', id_item=item.id_item) }}"
+                        >
+                            <button class="botao-remover-carrinho" type="submit">
+                                Remover
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        <section class="resumo-carrinho">
+            <p class="total-carrinho">
+                <span>Total do pedido</span>
+                <strong>R$ {{ "%.2f"|format(total)|replace(".", ",") }}</strong>
+            </p>
+
+            <p class="aviso-pedido">
+                O pedido ainda não está confirmado. A data será combinada depois.
+            </p>
+
+            <form
+                class="form-finalizar-pedido"
+                method="POST"
+                action="{{ url_for('finalizar_pedido') }}"
+            >
+                <div class="campo-observacao-pedido">
+                    <label for="observacao-pedido">
+                        Observações do pedido
+                    </label>
+
+                    <textarea
+                        id="observacao-pedido"
+                        name="observacao"
+                        rows="4"
+                        placeholder="Ex.: empadão sem milho, escrever uma mensagem no bolo..."
+                    ></textarea>
+                </div>
+
+                <button class="botao-voltar-catalogo" type="submit">
+                    Enviar pedido pelo WhatsApp
+                </button>
+            </form>
+
+            <a class="botao-voltar-catalogo" href="{{ url_for('catalogo') }}">
+                Continuar comprando
+            </a>
+        </section>
+    {% else %}
+        <section class="carrinho-vazio">
+            <h3>Seu carrinho está vazio</h3>
+            <p>Escolha suas delícias no catálogo para começar seu pedido.</p>
+            <a class="botao-voltar-catalogo" href="{{ url_for('catalogo') }}">
+                Ver catálogo
+            </a>
+        </section>
+    {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo | Ki-Brownie{% endblock %}
+
+{% block content %}
+<main class="principal">
+
+    <div class="cabecalho-catalogo">
+        <div>
+            <h2>Nosso catálogo</h2>
+            <p>Escolha suas delícias e solicite uma encomenda!</p>
+        </div>
+
+        <a
+            class="icone-carrinho"
+            href="{{ url_for('carrinho') }}"
+            aria-label="Abrir carrinho"
+            title="Abrir carrinho"
+        >
+            🛒
+            <span class="contador-carrinho">{{ total_itens }}</span>
+        </a>
+    </div>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            <div class="mensagens-catalogo">
+                {% for categoria, mensagem in mensagens %}
+                    <p class="mensagem {{ categoria }}">{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if produtos %}
+        {% set categorias = produtos|groupby("categoria") %}
+
+        <nav class="barra-categorias" aria-label="Categorias do catálogo">
+            {% for categoria, produtos_categoria in categorias %}
+                <a href="#categoria-{{ loop.index }}">
+                    {{ categoria }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        {% for categoria, produtos_categoria in categorias %}
+            <section
+                class="secao-categoria"
+                id="categoria-{{ loop.index }}"
+            >
+                <h2 class="titulo-categoria">{{ categoria }}</h2>
+
+                <div class="catalogo">
+                    {% for produto in produtos_categoria %}
+                        {% set nome = produto.nome|lower %}
+                        {% set categoria_produto = produto.categoria|lower|replace("-", " ")|trim %}
+                        {% set eh_bolo_vulcao = "bolo vulcão" in nome %}
+                        {% set eh_docinho = categoria_produto == "docinhos" and "docinhos" in nome %}
+                        {% set eh_brownie = categoria_produto in ["brownie", "brownies"] and "brownie recheado" in nome %}
+
+                        {% if categoria_produto in ["docinho", "docinhos"] %}
+                            {% set quantidade_minima = 25 %}
+                        {% elif categoria_produto in ["cupcake", "cupcakes"] %}
+                            {% set quantidade_minima = 8 %}
+                        {% elif categoria_produto in ["bem casado", "bem casados"] %}
+                            {% set quantidade_minima = 10 %}
+                        {% else %}
+                            {% set quantidade_minima = 1 %}
+                        {% endif %}
+
+                        <article class="produto">
+                            <details class="detalhes-produto">
+                                <summary class="resumo-produto">
+                                    {% if produto.imagem_url %}
+                                        <img
+                                            src="{{ produto.imagem_url }}"
+                                            alt="{{ produto.nome }}"
+                                        >
+                                    {% endif %}
+
+                                    <div class="informacoes-produto">
+                                        <h3>{{ produto.nome }}</h3>
+                                        <p>{{ produto.descricao }}</p>
+                                        <p class="categoria">{{ produto.categoria }}</p>
+                                        <p class="preco">
+                                            R$ {{ produto.preco_formatado|replace(".", ",") }}
+                                        </p>
+                                        <span class="texto-escolher">
+                                            Clique para escolher as opções
+                                        </span>
+                                    </div>
+
+                                    <span class="indicador-produto" aria-hidden="true">＋</span>
+                                </summary>
+
+                                <form
+                                    class="form-adicionar-produto"
+                                    method="POST"
+                                    action="{{ url_for('adicionar_ao_carrinho', id_produto=produto._id|string) }}"
+                                >
+                                    {% if eh_bolo_vulcao %}
+                                        <label for="massa-{{ produto._id }}">
+                                            Massa
+                                        </label>
+
+                                        <select
+                                            id="massa-{{ produto._id }}"
+                                            name="massa"
+                                            required
+                                        >
+                                            <option value="">Selecione a massa</option>
+
+                                            {% for massa in produto.opcoes.massas %}
+                                                {% if massa == "Bolo de cenoura" %}
+                                                    <option value="{{ massa }}">
+                                                        Bolo de cenoura (+ R$12,00)
+                                                    </option>
+                                                {% else %}
+                                                    <option value="{{ massa }}">
+                                                        {{ massa }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                        <label for="cobertura1-{{ produto._id }}">
+                                            Primeiro sabor de cobertura:
+                                        </label>
+
+                                        <select
+                                            id="cobertura1-{{ produto._id }}"
+                                            name="cobertura1"
+                                            required
+                                        >
+                                            <option value="">Escolha a cobertura</option>
+
+                                            {% for cobertura in produto.opcoes.coberturas %}
+                                                <option value="{{ cobertura }}">
+                                                    {{ cobertura }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+
+                                        {% if produto.max_coberturas > 1 %}
+                                            <label for="cobertura2-{{ produto._id }}">
+                                                Segundo sabor de cobertura (opcional):
+                                            </label>
+
+                                            <select
+                                                id="cobertura2-{{ produto._id }}"
+                                                name="cobertura2"
+                                            >
+                                                <option value="Nenhuma">Nenhuma</option>
+
+                                                {% for cobertura in produto.opcoes.coberturas %}
+                                                    <option value="{{ cobertura }}">
+                                                        {{ cobertura }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <small>
+                                                Escolha uma segunda cobertura se desejar.
+                                            </small>
+                                        {% endif %}
+
+                                    {% elif eh_docinho %}
+                                        <label for="sabor-{{ produto._id }}">
+                                            Sabor
+                                        </label>
+
+                                        <select
+                                            id="sabor-{{ produto._id }}"
+                                            name="sabor"
+                                            required
+                                        >
+                                            <option value="">Selecione o sabor</option>
+
+                                            {% for sabor in produto.opcoes.sabores %}
+                                                <option value="{{ sabor }}">
+                                                    {{ sabor }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    {% elif eh_brownie %}
+                                        <label for="sabor-{{ produto._id }}">
+                                            Sabor
+                                        </label>
+
+                                        <select
+                                            id="sabor-{{ produto._id }}"
+                                            name="sabor"
+                                            required
+                                        >
+                                            <option value="">Selecione o sabor</option>
+
+                                            {% for sabor in produto.opcoes.sabores %}
+                                                <option value="{{ sabor }}">
+                                                    {{ sabor }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+
+                                    <div class="seletor-quantidade">
+                                        <label for="quantidade-{{ produto._id }}">
+                                            Quantidade
+                                        </label>
+
+                                        <div class="controle-quantidade">
+                                            <input
+                                                id="quantidade-{{ produto._id }}"
+                                                type="number"
+                                                name="quantidade"
+                                                min="{{ quantidade_minima }}"
+                                                step="1"
+                                                value="{{ quantidade_minima }}"
+                                                data-minimo="{{ quantidade_minima }}"
+                                                required
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="botao-mais"
+                                                aria-label="Adicionar ao carrinho"
+                                                title="Adicionar ao carrinho"
+                                            >🛒</button>
+                                        </div>
+
+                                        {% if quantidade_minima > 1 %}
+                                            <small>
+                                                Quantidade mínima: {{ quantidade_minima }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </details>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endfor %}
+    {% else %}
+        <p>Nosso catálogo está sendo preparado. Volte em breve!</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('inicio') }}">Voltar ao início</a></p>
+</main>
+{% endblock %}

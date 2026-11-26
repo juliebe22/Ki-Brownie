@@ -1,0 +1,112 @@
+import os
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
+
+from bson import ObjectId
+from bson.decimal128 import Decimal128
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DATABASE = os.getenv("MONGO_DATABASE", "ki_brownie")
+
+if not MONGO_URI:
+    raise RuntimeError("MONGO_URI não encontrada no arquivo .env")
+
+cliente = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+banco = cliente[MONGO_DATABASE]
+
+colecao_produtos = banco["produtos"]
+colecao_pedidos = banco["pedidos"]
+
+
+def criar_pedido(
+    nome_cliente,
+    telefone,
+    data_desejada,
+    modalidade,
+    endereco,
+    observacoes,
+    itens
+):
+    nome_cliente = nome_cliente.strip()
+    telefone = telefone.strip()
+    data_desejada = data_desejada.strip()
+    modalidade = modalidade.strip()
+    endereco = endereco.strip()
+    observacoes = observacoes.strip()
+
+    if not nome_cliente:
+        raise ValueError("Informe seu nome.")
+
+    if not telefone:
+        raise ValueError("Informe seu telefone.")
+
+    if not data_desejada:
+        raise ValueError("Informe a data desejada.")
+
+    if modalidade not in {"Retirada", "Entrega"}:
+        raise ValueError("Escolha retirada ou entrega.")
+
+    if modalidade == "Entrega" and not endereco:
+        raise ValueError("Informe o endereço para entrega.")
+
+    if not itens:
+        raise ValueError("O pedido precisa ter pelo menos um produto.")
+
+    itens_pedido = []
+    total = Decimal("0.00")
+
+    for item in itens:
+        id_produto = str(item.get("id_produto", ""))
+        quantidade = item.get("quantidade")
+
+        if not ObjectId.is_valid(id_produto):
+            raise ValueError("Um dos produtos do pedido é inválido.")
+
+        try:
+            quantidade = int(quantidade)
+        except (TypeError, ValueError):
+            raise ValueError("A quantidade de um produto é inválida.")
+
+        if quantidade < 1:
+            raise ValueError("A quantidade deve ser maior que zero.")
+
+        produto = colecao_produtos.find_one({
+            "_id": ObjectId(id_produto),
+            "ativo": True
+        })
+
+        if not produto:
+            raise ValueError("Um dos produtos não está mais disponível.")
+
+        preco = Decimal(str(produto["preco"].to_decimal()))
+        subtotal = preco * quantidade
+        total += subtotal
+
+        itens_pedido.append({
+            "id_produto": id_produto,
+            "nome": produto["nome"],
+            "quantidade": quantidade,
+            "preco_unitario": Decimal128(preco),
+            "subtotal": Decimal128(subtotal)
+        })
+
+    pedido = {
+        "nome_cliente": nome_cliente,
+        "telefone": telefone,
+        "data_desejada": data_desejada,
+        "modalidade": modalidade,
+        "endereco": endereco if modalidade == "Entrega" else "",
+        "observacoes": observacoes,
+        "itens": itens_pedido,
+        "total": Decimal128(total),
+        "status": "Aguardando confirmação",
+        "criado_em": datetime.now(timezone.utc)
+    }
+
+    resultado = colecao_pedidos.insert_one(pedido)
+
+    return str(resultado.inserted_id)

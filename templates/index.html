@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+
+{% block title %}Ki-Brownie | Doces feitos com amor{% endblock %}
+
+{% block content %}
+
+<header class="topo">
+    <h1>Ki-Brownie</h1>
+    <p>Feito com carinho, servido com amor.</p>
+</header>
+
+<main class="principal">
+    <span class="subtitulo">UM PEDACINHO DE FELICIDADE</span>
+
+    <h2>Bem-vinda à Ki-Brownie!</h2>
+
+    <p>
+        Doces preparados com carinho
+        para tornar seus momentos especiais.
+    </p>
+
+    <p class="mensagem">
+        Em breve, nossas delícias estarão disponíveis por aqui!
+    </p>
+    <p>
+    <a href="{{ url_for('catalogo') }}">Ver nosso catálogo</a>
+    </p>
+</main>
+
+<footer>
+    <p>Ki-Brownie © 2026</p>
+</footer>
+
+{% endblock %}

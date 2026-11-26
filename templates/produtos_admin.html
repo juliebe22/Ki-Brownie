@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Produtos | Ki-Brownie{% endblock %}
+
+{% block content %}
+<main class="principal">
+    <h2>Produtos da Ki-Brownie</h2>
+    <p>Cadastre e gerencie os produtos da loja.</p>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% for categoria, mensagem in mensagens %}
+            <p class="mensagem">{{ mensagem }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <label for="nome">Nome do produto</label>
+        <input id="nome" name="nome" type="text" required>
+
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" name="descricao"></textarea>
+
+        <label for="categoria">Categoria</label>
+        <input
+            id="categoria"
+            name="categoria"
+            type="text"
+            placeholder="Ex.: Brownies"
+            required
+        >
+
+        <label for="preco">Preço (R$)</label>
+        <input
+            id="preco"
+            name="preco"
+            type="number"
+            min="0.01"
+            step="0.01"
+            required
+        >
+
+        <label for="imagem">Foto do produto</label>
+        <input id="imagem" name="imagem" type="file" accept=".jpg,.jpeg,.png,.webp">
+
+        <button type="submit">Cadastrar produto</button>
+    </form>
+
+    <h3>Produtos cadastrados</h3>
+
+    {% if produtos %}
+        <ul>
+            {% for produto in produtos %}
+                <li>
+                    <strong>{{ produto.nome }}</strong>
+                    — {{ produto.categoria }}
+                    — R$ {{ produto.preco_formatado|replace(".", ",") }}
+
+                    {% if produto.ativo %}
+                        — <span>Ativo</span>
+                    {% else %}
+                        — <span>Desativado</span>
+                    {% endif %}
+
+                    <a
+                        class="botao-link"
+                        href="{{ url_for('editar_produto', id_produto=produto._id) }}"
+                    >
+                        Editar
+                    </a>
+
+                    {% if produto.ativo %}
+                        <form
+                            class="form-acao"
+                            method="POST"
+                            action="{{ url_for('admin_desativar_produto', id_produto=produto._id) }}"
+                            onsubmit="return confirm('Desativar este produto?')"
+                        >
+                            <button class="botao-acao" type="submit">
+                                Desativar
+                            </button>
+                        </form>
+                    {% else %}
+                        <form
+                            class="form-acao"
+                            method="POST"
+                            action="{{ url_for('admin_reativar_produto', id_produto=produto._id) }}"
+                            onsubmit="return confirm('Reativar este produto?')"
+                        >
+                            <button class="botao-acao" type="submit">
+                                Reativar
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <form
+                        class="form-acao"
+                        method="POST"
+                        action="{{ url_for('admin_excluir_produto', id_produto=produto._id) }}"
+                        onsubmit="return confirm('Tem certeza que deseja excluir este produto permanentemente? Essa ação não pode ser desfeita.')"
+                    >
+                        <button class="botao-acao botao-excluir" type="submit">
+                            Excluir
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum produto cadastrado ainda.</p>
+    {% endif %}
+
+    <p>
+        <a class="botao-link" href="{{ url_for('admin') }}">
+            Voltar ao painel
+        </a>
+    </p>
+</main>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Painel administrativo | Ki-Brownie{% endblock %}
+
+{% block content %}
+<main class="principal">
+    <h2>Painel administrativo</h2>
+    <p>Bem-vinda à área de administração da Ki-Brownie.</p>
+
+    <section>
+        <h3>Gerenciar a loja</h3>
+        <p>Cadastre, edite, desative e reative produtos.</p>
+
+        <a 
+            class="botao-link"
+            href="{{ url_for('admin_produtos') }}"
+        >
+            Gerenciar produtos
+        </a>
+    </section>
+
+    <form method="POST" action="{{ url_for('logout') }}">
+        <button type="submit">Sair da administração</button>
+    </form>
+</main>
+{% endblock %}
