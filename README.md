@@ -21,7 +21,7 @@ Assista à demonstração do sistema para conhecer suas principais funcionalidad
 
 ## 🌐 Link do site publicado
 
-ki-brownie.onrender.com
+https://ki-brownie.onrender.com
 
 ## ✨ Funcionalidades
 
