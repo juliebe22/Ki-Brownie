@@ -148,18 +148,18 @@ def obter_opcoes_produto(produto):
             "max_coberturas": 2 if tamanho and tamanho > 16 else 1,
         }
 
-    if categoria in ("docinhos", "docinhos premium") and "docinhos" in nome:
+    if categoria in ("docinhos", "docinhos premium"):
        if "personalizados" in nome:
            return {"tipo": "personalizados"}
 
-       if categoria == "docinhos premium":
-           return {
-            "tipo": "docinhos",
-            "sabores": [
-                "Ferrero Rocher",
-                "Olho de sogra",
-            ],
-        }
+       if "premium" in nome or categoria == "docinhos premium":
+            return {
+                "tipo": "docinhos",
+                "sabores": [
+                    "Ferrero Rocher",
+                    "Olho de sogra",
+                ],
+            }
 
        if "tradicionais" in nome:
            return {
