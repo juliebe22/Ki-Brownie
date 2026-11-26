@@ -19,6 +19,10 @@ Assista à demonstração do sistema para conhecer suas principais funcionalidad
 
 **Link do vídeo:** [Inserir link do vídeo de demonstração aqui](COLE_O_LINK_DO_VIDEO_AQUI)
 
+## 🌐 Link do site publicado
+
+ki-brownie.onrender.com
+
 ## ✨ Funcionalidades
 
 ### Para os clientes
