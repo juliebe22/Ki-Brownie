@@ -10,6 +10,8 @@ class Config:
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
+    ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "")
+    
     MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DATABASE = os.getenv("MONGO_DATABASE", "ki_brownie")
 

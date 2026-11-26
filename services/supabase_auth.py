@@ -25,13 +25,23 @@ def autenticar_admin(email, senha):
     if not resposta.user or not resposta.session:
         return None
 
+    emails_autorizados = {
+        email.strip().lower()
+        for email in Config.ADMIN_EMAILS.split(",")
+        if email.strip()
+    }
+
+    email_usuario = (resposta.user.email or "").strip().lower()
+
+    if email_usuario not in emails_autorizados:
+        return None
+
     return {
         "id": resposta.user.id,
         "email": resposta.user.email,
         "access_token": resposta.session.access_token,
         "refresh_token": resposta.session.refresh_token
     }
-
 
 def obter_usuario(access_token):
     if not access_token:

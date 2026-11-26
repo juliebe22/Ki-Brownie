@@ -378,6 +378,7 @@ def login():
         try:
             usuario = autenticar_admin(email, senha)
         except Exception:
+            app.logger.exception("Erro ao autenticar administrador")
             usuario = None
 
         if not usuario:

@@ -852,3 +852,35 @@ html {
         height: 85px;
     }
 }
+.botao-catalogo {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #e889a8;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.botao-catalogo:hover {
+    background-color: #d96f92;
+}
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap');
+
+.topo h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 5rem);
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: 1.5px;
+    line-height: 1.1;
+}
+.logo-inicio {
+    display: block;
+    width: min(220px, 70%);
+    height: auto;
+    margin: 20px auto;
+    object-fit: contain;
+}
